@@ -1,6 +1,7 @@
 package src.auth;
 
 import src.models.User;
+import src.utils.Logger;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -30,7 +31,7 @@ public class Auth {
             }
         } catch (IOException e) {
             // Se manda un mensaje referente al archivo.
-            System.out.println("ERROR: Failed to load users: " + e.getMessage());
+            Logger.log("ERROR", "Failed to lead users" + e.getMessage());
         }
     }
 
@@ -56,6 +57,7 @@ public class Auth {
         } else {
             // Mensaje de no haber encontrado el usuario o la contraseña es incorrecta.
             System.out.println("Invalid credentials.");
+            Logger.log("ERROR AUTH", "Failed login for invalid credentials.");
         }
         // Si no ingresa en la condición, retorna false.
         return false;
