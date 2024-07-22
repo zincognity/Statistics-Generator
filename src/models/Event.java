@@ -1,4 +1,4 @@
-package models;
+package src.models;
 
 public class Event {
     private int date;
