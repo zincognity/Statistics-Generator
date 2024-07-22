@@ -6,11 +6,13 @@ import src.utils.Logger;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class Auth {
+    public static String auth;
     // Ubitación del archivo usuarios.txt.
-    private String filePath = "data/usuarios.txt";
+    private static final String filePath = "data/usuarios.txt";
 
     public Auth(){
         // Al momento que se ejecuta la clase auth, se ejecuta la función loadUsers.
@@ -18,6 +20,7 @@ public class Auth {
     }
     // Se crea la función loadUsers para registrar los datos que se encuentran en el usuarios.txt.
     private void loadUsers(){
+        User.users = new HashMap<>();
         // Se hace un try para identificar cualquier error.
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))){ // El BufferedReader es como un lector de inputs.
             // El input en este caso sería el contenido del archivo, y lo leerá línea por línea.
@@ -53,6 +56,7 @@ public class Auth {
         if(User.users.containsKey(username) && User.users.get(username).equals(password)){
          // Se identifica la key (el usuario). Y si la key coincide con el password introducido, entonces retorna true.
             System.out.println("Login successful!");
+            auth = username;
             return true;
         } else {
             // Mensaje de no haber encontrado el usuario o la contraseña es incorrecta.
