@@ -14,8 +14,8 @@ import src.processor.Stadistics;
 public class Menu {
     private static final String file_Path = "data/data.csv";
     private static Data data = new Data();
-    private static ReportExporter report = new ReportExporter();
     private static List<Event> events = data.loadData(file_Path);
+    private static String titleHead;
 
     // Se crea la función showMenu que será un handlers para abrir menus.
     public static void showMenu(String title, String[][] options, Scanner in){
@@ -52,6 +52,7 @@ public class Menu {
                     // Si no, la opción escogida se puede mostrar en pantalla.
                     if(option == i){
                         System.out.println("Apartado de: " + options[i-1][1]);
+                        titleHead = options[i-1][1];
                         Option(options[i-1][1] ,options[i-1][0], in);
                     }
                     // De lo contrario es porque ha escogido una opción que no está dentro de las opciones.
@@ -71,6 +72,12 @@ public class Menu {
             // Si isCorrect es false, muestra que tiene que ingresar una opción válida.
             if(!isCorrect) System.out.println("Invalid option, please enter a menu option.");
         } while (!isEnd);
+    }
+
+    // Se crea la función Clear para limpiar la pantalla.
+    public void Clear(){
+        System.out.print("\033[H\033[2J");  
+        System.out.flush();
     }
 
     // Se crea la función ModuleOptions que abrirá los apartados prederteminados para cada opción (Imprimir, Exportar).
@@ -99,22 +106,29 @@ public class Menu {
             case "Print":
                 printStadistics(stadistics); // Llama a la función printStadistics.
                 break;
+            case "Export":
+                exportStadistics(stadistics);; // Llama a la función printStadistics.
+                break;
         }
     }
 
     // Se crear las variables stadistics y type para almacenar datos momentáneos.
-    public static Map<Integer, Long> stadistics;
-    public static String type;
+    private static Map<Integer, Long> stadistics;
+    private static String type;
+    private static int year;
+    private static int endYear;
+    private static double minMagnitude;
+    private static double maxMagnitude;
 
     // Se crea la función showYearRange que abrirá un formulario y ejecutará la función generateYearlyStadistics.
     private static void showYearRange(String title, Scanner in){
-        System.out.println("Ingrese el ańo de inicio:");
-        int startYear = in.nextInt();
-        System.out.println("Ingrese el ańo de inicio:");
-        int endYear = in.nextInt();
+        System.out.println("Ingrese el año de inicio:");
+        year = in.nextInt();
+        System.out.println("Ingrese el año final:");
+        endYear = in.nextInt();
         in.nextLine();
         // Se ejecuta la función de la clase Stadistics.
-        stadistics = Stadistics.generateYearlyStadistics(events, startYear, endYear);
+        stadistics = Stadistics.generateYearlyStadistics(events, year, endYear);
         // Se setea el tipo de dato.
         type = "Year";
         // Abre el menú predeterminado de cada módulo.
@@ -123,8 +137,9 @@ public class Menu {
 
     // Se crea la función showMonthByYear que abrirá un formulario y ejecutará la función generateMonthlyStatistics.
     private static void showMonthByYear(String title, Scanner in){
+        endYear = 0;
         System.out.println("Ingrese el año: ");
-        int year = in.nextInt();
+        year = in.nextInt();
         in.nextLine();
         // Se ejecuta la función de la clase Stadistics.
         stadistics = Stadistics.generateMonthlyStatistics(events, year);
@@ -136,24 +151,26 @@ public class Menu {
 
     // Se crea la función showMagnitudeRange que abrirá un formulario y ejecutará la función generateMagnitudeStatistics.
     private static void showMagnitudeRange(String title, Scanner in){
+        endYear = 0;
         System.out.println("Ingrese el año: ");
-        int year = in.nextInt();
+        year = in.nextInt();
         System.out.println("Ingrese la magnitud mínima: ");
-        double minMagnitude = in.nextDouble();
+        minMagnitude = in.nextDouble();
         System.out.println("Ingrese la magnitud máxima: ");
-        double maxMagnitude = in.nextDouble();
+        maxMagnitude = in.nextDouble();
         // Se ejecuta la función de la clase Stadistics.
         stadistics = Stadistics.generateMagnitudeStatistics(events, minMagnitude, maxMagnitude, year);
         // Se setea el tipo de dato.
-        type = "Monthly";
+        type = "Monthly-Magnitude";
         // Abre el menú predeterminado de cada módulo.
         ModuleOptions(title, in);
     }
 
     // Se crea la función showHourByYear que abrirá un formulario y ejecutará la función generateHourlyStatistics.
     private static void showHourByYear(String title, Scanner in){
+        endYear = 0;
         System.out.println("Ingrese el año: ");
-        int year = in.nextInt();
+        year = in.nextInt();
         // Se ejecuta la función de la clase Stadistics.
         stadistics = Stadistics.generateHourlyStatistics(events, year);
         // Se setea el tipo de dato.
@@ -169,7 +186,7 @@ public class Menu {
             case "Year":
                 System.out.println("Año\tEventos");
                 break;
-            case "Monthly":
+            case "Monthly", "Monthly-Magnitude":
                 System.out.println("Mes\tEventos");
                 break;
             case "Hour":
@@ -179,6 +196,52 @@ public class Menu {
         // Se realizar un for para imprimir los datos da las estadísticas seteadas.
         for (Map.Entry<Integer, Long> entry : statistics.entrySet()) {
             System.out.println(entry.getKey() + "\t" + entry.getValue());
+        }
+    }
+
+    // Se crea la función exportStadistics que permitirá imprimir los datos obtenido en un archivo a crear o editar.
+    private static void exportStadistics(Map<Integer, Long> statistics){
+        // Se crea un StringBuilder para añadirle los valores requeridos según el tipo de función.
+        StringBuilder reportContent = new StringBuilder();
+        // Se crea una variable local fileName que definirá el nombre del archivo a crear o modificar.
+        String fileName = "";
+        switch (type) {
+            case "Year":
+                reportContent.append(titleHead+"\n");
+                reportContent.append("Rango de años: ").append(year).append(" - ").append(endYear).append("\n");
+                reportContent.append("Año\tEventos\n");
+                fileName = "reporte_anual_";
+                break;
+            case "Monthly":
+                reportContent.append(titleHead+"\n");
+                reportContent.append("Año: ").append(year).append("\n");
+                reportContent.append("Mes\tEventos\n");
+                fileName = "reporte_mensual_";
+            case "Monthly-Magnitude":
+                reportContent.append(titleHead+"\n");
+                reportContent.append("Año: ").append(year).append("\n");
+                reportContent.append("Rango de magnitudes: ").append(minMagnitude).append(" - ").append(maxMagnitude).append("\n");
+                reportContent.append("Mes\tEventos\n");
+                fileName = "reporte_magnitudes_";
+                break;
+            case "Hour":
+                reportContent.append(titleHead+"\n");
+                reportContent.append("Año: ").append(year).append("\n");
+                reportContent.append("Hora\tEventos\n");
+                fileName = "reporte_horario_";
+                break;
+        }
+        // Se realiza un for para imprimir todos los datos obtenidos.
+        for (Map.Entry<Integer, Long> entry : statistics.entrySet()) {
+            reportContent.append(entry.getKey()).append("\t").append(entry.getValue()).append("\n");
+        }
+        // Se condiciona si el endYear es igual a 0, es porque no entró en una opción que requiera el endYear.
+        if(endYear == 0){
+            // Se llama a la función exportReport que creará el archivo con su contenido.
+            ReportExporter.exportReport(reportContent.toString(), "reporte_horario_" + year + ".txt");
+        } else{
+            // Se llama a la función exportReport que creará el archivo con su contenido.
+            ReportExporter.exportReport(reportContent.toString(), fileName + year + "_" + endYear + ".txt");
         }
     }
 }
