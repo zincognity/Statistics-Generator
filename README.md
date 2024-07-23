@@ -16,7 +16,7 @@ Este proyecto se ha comenzado el día 22/07/2024 para ser presentado como trabaj
 
 ```console
 > cd [directory]
-> git clone https://github.com/jesusreluz/Final-Project-2024---Cycle-1.git
+> git clone https://github.com/jesusreluz/Statistics-Generator.git
 ```
 
 3. Dirigirse al archivo [index.java](https://github.com/jesusreluz/Statistics-Generator/tree/main/index.java)
