@@ -9,8 +9,8 @@ import src.utils.Menu;
 public class index {
     public static void main(String [] args) {
         Scanner in = new Scanner(System.in);
-        Auth asd = new Auth();
-        if(asd.authenticate()){
+        Auth auth = new Auth();
+        if(auth.authenticate()){
             String title = "Principal";
             String[][] menu = {{ "YearRange", "Número de eventos sísmicos por año dado un rango de años."},{"Monthly", "Número de eventos sísmicos por mes dado un año."},{"MagnitudeRangeByYear","Número de eventos sísmicos por mes dados un rango de magnitudes y un año."},{"Hour", "Número de eventos sísmicos por cada hora dado un año."}};
             Menu.showMenu(title, menu, in);

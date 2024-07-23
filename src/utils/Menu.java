@@ -262,8 +262,14 @@ public class Menu {
         }
         reportContent.append("TOTAL\t\t").append(sum).append("\t").append(format.format(porcentT)).append("%");
         // Se condiciona si el endYear es igual a 0, es porque no entró en una opción que requiera el endYear.
-        if(endYear != 0) ReportExporter.exportReport(reportContent.toString(), fileName + year + "_" + endYear + ".txt");
+        if(endYear != 0){
+            ReportExporter.exportReport(reportContent.toString(), fileName + year + "_" + endYear + ".txt");
+            System.out.println("File created: " + fileName + year + "_" + endYear + ".txt");
+        } 
         // Se llama a la función exportReport que creará el archivo con su contenido.
-        if(endYear == 0) ReportExporter.exportReport(reportContent.toString(), fileName + year + ".txt");
+        if(endYear == 0){
+            ReportExporter.exportReport(reportContent.toString(), fileName + year + ".txt");
+            System.out.println("File created: " + fileName + year + ".txt");
+        } 
     }
 }

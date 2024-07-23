@@ -1,6 +1,0 @@
-Exportar a archivo plano.
-Rango de años: 2020 - 2021
-Año	Eventos	Porcentaje
-2020	808	49.21%
-2021	834	100.00%
-TOTAL		1642	100.00%

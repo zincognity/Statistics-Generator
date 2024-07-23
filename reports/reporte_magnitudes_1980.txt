@@ -1,0 +1,17 @@
+Exportar a archivo plano.
+Año: 1980
+Rango de magnitudes: 0.0 - 8.0
+Nº	Mes	Eventos	Porcentaje
+1	ENERO	14	14.89%
+2	FEBRERO	2	2.13%
+3	MARZO	16	17.02%
+4	ABRIL	6	6.38%
+5	MAYO	5	5.32%
+6	JUNIO	8	8.51%
+7	JULIO	5	5.32%
+8	AGOSTO	7	7.45%
+9	SETIEMBRE	6	6.38%
+10	OCTUBRE	3	3.19%
+11	NOVIEMBRE	11	11.70%
+12	DICIEMBRE	11	11.70%
+TOTAL		94	100.00%
