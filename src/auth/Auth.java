@@ -2,6 +2,7 @@ package src.auth;
 
 import src.models.User;
 import src.utils.Logger;
+import src.utils.Menu;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -10,7 +11,6 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 public class Auth {
-    public static String auth;
     // Ubitación del archivo usuarios.txt.
     private static final String filePath = "data/usuarios.txt";
 
@@ -38,7 +38,9 @@ public class Auth {
         }
     }
 
+    @SuppressWarnings("resource")
     public boolean authenticate(){
+        Menu.Clear();
         // Se crea la instancia del Scanner.
         Scanner in = new Scanner(System.in);
         // Formulario de inicio sesión.
@@ -54,15 +56,17 @@ public class Auth {
          * }
         */
         if(User.users.containsKey(username) && User.users.get(username).equals(password)){
+            Menu.Clear();
          // Se identifica la key (el usuario). Y si la key coincide con el password introducido, entonces retorna true.
             System.out.println("Login successful!");
-            auth = username;
             return true;
         } else {
+            Menu.Clear();
             // Mensaje de no haber encontrado el usuario o la contraseña es incorrecta.
             System.out.println("Invalid credentials.");
             Logger.log("ERROR AUTH", "Failed login for invalid credentials.");
         }
+        in.close();
         // Si no ingresa en la condición, retorna false.
         return false;
     }

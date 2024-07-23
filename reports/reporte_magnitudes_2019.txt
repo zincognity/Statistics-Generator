@@ -1,0 +1,17 @@
+Exportar a archivo plano.
+Año: 2019
+Rango de magnitudes: 0.0 - 7.0
+Nº	Mes	Eventos	Porcentaje
+1	ENERO	50	8.87%
+2	FEBRERO	45	7.98%
+3	MARZO	42	7.45%
+4	ABRIL	46	8.16%
+5	MAYO	76	13.48%
+6	JUNIO	49	8.69%
+7	JULIO	50	8.87%
+8	AGOSTO	41	7.27%
+9	SETIEMBRE	36	6.38%
+10	OCTUBRE	52	9.22%
+11	NOVIEMBRE	36	6.38%
+12	DICIEMBRE	41	7.27%
+TOTAL		564	100.00%

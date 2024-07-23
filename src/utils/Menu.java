@@ -1,11 +1,11 @@
 package src.utils;
 
+import java.text.DecimalFormat;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-import src.auth.Auth;
 import src.models.Event;
 import src.processor.Data;
 import src.processor.ReportExporter;
@@ -26,8 +26,6 @@ public class Menu {
         do {
             // Colocamos la variable isCorrect dentro del bucle para inicializarlo con true.
             isCorrect = true;
-            // Mensaje de bienvenida al usuario identificado.
-            if(Auth.auth != null) System.out.println("Bienvenid@ " + Auth.auth);
             // Realizamos un for para imprimir en la pantalla todas las opciones dependiendo el menu[], que es la lista de opciones.
             for (int i = 0; i <= options.length; i++) {
                 // Si la variable i es diferente a options.length es porque estas opciones existen.
@@ -41,13 +39,12 @@ public class Menu {
                 System.out.println("Selecciona una opción:");
                 option = in.nextInt();
                 in.nextLine();
+                Clear();
                 // Buscamos en todas las opciones la opción escogida con la ayuda de un for.
                 for (int i = 0; i <= options.length; i++) {
                     // Si la opción es la última de todas, o el tamaño del options[] es porque ha escogido Salir.
                     if(option == options.length + 1){
                         isEnd = true;
-                        // Si es el menú principal, es porque ha dejado la autenticación, por lo tanto, el auth se vuelve null.
-                        if(title.equals("Principal")) Auth.auth = null;
                     }
                     // Si no, la opción escogida se puede mostrar en pantalla.
                     if(option == i){
@@ -75,14 +72,16 @@ public class Menu {
     }
 
     // Se crea la función Clear para limpiar la pantalla.
-    public void Clear(){
+    public static void Clear(){
         System.out.print("\033[H\033[2J");  
         System.out.flush();
     }
 
     // Se crea la función ModuleOptions que abrirá los apartados prederteminados para cada opción (Imprimir, Exportar).
     public static void ModuleOptions(String title, Scanner in){
-        System.out.println(title);
+        Menu.Clear();
+        if(endYear != 0) System.out.println(title + ": " + year + " - " + endYear);
+        if(endYear == 0) System.out.println(title + ": " + year);
         String[][] menu = {{"Print", "Imprimir por pantalla."}, {"Export", "Exportar a archivo plano."}};
         showMenu(title, menu, in);
     }
@@ -184,19 +183,34 @@ public class Menu {
         // Se usa un switch para identificar el tipo, en este casó sería el formato.
         switch (type) {
             case "Year":
-                System.out.println("Año\tEventos");
+                System.out.println("Año\tEventos\tPorcentaje");
                 break;
             case "Monthly", "Monthly-Magnitude":
-                System.out.println("Mes\tEventos");
+                System.out.println("Nº\tMes\tEventos\tPorcentaje");
                 break;
             case "Hour":
-                System.out.println("Hora\tEventos");
+                System.out.println("Hora\tEventos\tPorcentaje");
                 break;
+        }
+        long sum = 0;
+        double porcentT = 0;
+        DecimalFormat format = new DecimalFormat("#.00");
+        // Se realiza un for para setear la suma de todos los valores o eventos.
+        for (Map.Entry<Integer, Long> entry : statistics.entrySet()) {
+            sum = sum + entry.getValue();
         }
         // Se realizar un for para imprimir los datos da las estadísticas seteadas.
         for (Map.Entry<Integer, Long> entry : statistics.entrySet()) {
-            System.out.println(entry.getKey() + "\t" + entry.getValue());
+            double porcent = entry.getValue().doubleValue() / sum * 100;
+            porcentT = porcentT + porcent;
+            if(type.equals("Monthly") || type.equals("Monthly-Magnitude")){
+                System.out.println(entry.getKey() + "\t" + Months.getMonth(entry.getKey()) + "\t" + entry.getValue() + "\t" + format.format(porcent) + "%");
+            } else {
+                System.out.println(entry.getKey() + "\t" + entry.getValue() + "\t" + format.format(porcent) + "%");
+            }
+            
         }
+        System.out.println("TOTAL\t\t" + sum + "\t" + format.format(porcentT) + "%");
     }
 
     // Se crea la función exportStadistics que permitirá imprimir los datos obtenido en un archivo a crear o editar.
@@ -209,39 +223,47 @@ public class Menu {
             case "Year":
                 reportContent.append(titleHead+"\n");
                 reportContent.append("Rango de años: ").append(year).append(" - ").append(endYear).append("\n");
-                reportContent.append("Año\tEventos\n");
+                reportContent.append("Año\tEventos\tPorcentaje\n");
                 fileName = "reporte_anual_";
                 break;
             case "Monthly":
                 reportContent.append(titleHead+"\n");
                 reportContent.append("Año: ").append(year).append("\n");
-                reportContent.append("Mes\tEventos\n");
+                reportContent.append("Nº\tMes\tEventos\tPorcentaje\n");
                 fileName = "reporte_mensual_";
+                break;
             case "Monthly-Magnitude":
                 reportContent.append(titleHead+"\n");
                 reportContent.append("Año: ").append(year).append("\n");
                 reportContent.append("Rango de magnitudes: ").append(minMagnitude).append(" - ").append(maxMagnitude).append("\n");
-                reportContent.append("Mes\tEventos\n");
+                reportContent.append("Nº\tMes\tEventos\tPorcentaje\n");
                 fileName = "reporte_magnitudes_";
                 break;
             case "Hour":
                 reportContent.append(titleHead+"\n");
                 reportContent.append("Año: ").append(year).append("\n");
-                reportContent.append("Hora\tEventos\n");
+                reportContent.append("Hora\tEventos\tPorcentaje\n");
                 fileName = "reporte_horario_";
                 break;
         }
-        // Se realiza un for para imprimir todos los datos obtenidos.
+        long sum = 0;
+        double porcentT = 0;
+        DecimalFormat format = new DecimalFormat("#.00");
+        // Se realizar un for para imprimir los datos da las estadísticas seteadas.
         for (Map.Entry<Integer, Long> entry : statistics.entrySet()) {
-            reportContent.append(entry.getKey()).append("\t").append(entry.getValue()).append("\n");
+            sum = sum + entry.getValue();
         }
+
+        for (Map.Entry<Integer, Long> entry : statistics.entrySet()) {
+            double porcent = entry.getValue().doubleValue() / sum * 100;
+            porcentT = porcentT + porcent;
+            if(!type.equals("Monthly") && !type.equals("Monthly-Magnitude")) reportContent.append(entry.getKey()).append("\t").append(entry.getValue()).append("\t").append(format.format(porcentT)).append("%").append("\n");
+            if(type.equals("Monthly") || type.equals("Monthly-Magnitude")) reportContent.append(entry.getKey()).append("\t").append(Months.getMonth(entry.getKey())).append("\t").append(entry.getValue()).append("\t").append(format.format(porcent)).append("%").append("\n");
+        }
+        reportContent.append("TOTAL\t\t").append(sum).append("\t").append(format.format(porcentT)).append("%");
         // Se condiciona si el endYear es igual a 0, es porque no entró en una opción que requiera el endYear.
-        if(endYear == 0){
-            // Se llama a la función exportReport que creará el archivo con su contenido.
-            ReportExporter.exportReport(reportContent.toString(), "reporte_horario_" + year + ".txt");
-        } else{
-            // Se llama a la función exportReport que creará el archivo con su contenido.
-            ReportExporter.exportReport(reportContent.toString(), fileName + year + "_" + endYear + ".txt");
-        }
+        if(endYear != 0) ReportExporter.exportReport(reportContent.toString(), fileName + year + "_" + endYear + ".txt");
+        // Se llama a la función exportReport que creará el archivo con su contenido.
+        if(endYear == 0) ReportExporter.exportReport(reportContent.toString(), fileName + year + ".txt");
     }
 }
