@@ -17,6 +17,5 @@ public class index {
         } else {
             System.out.println("Authentication failed. Exiting program.");
         }
-		
     }
 }
